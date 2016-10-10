@@ -14,52 +14,56 @@ public class Run : MonoBehaviour {
 		float hole_min = 0.1f, hole_max = maxSize (dock);
 		float stepSize = 0.05f;
 		int batch_size = 15;
-
+		int step_count = 5;
 
 		// Experiment values
 		float I, deltaI, k = 0.2f;
-		float correct_percent_batch = 0;
+		float correct_percent_batch;
+		float correct_percent;
 
-		int iteration_count = 5;
-		int batch_count = 3 * iteration_count;
-		ArrayList<bool> R = new ArrayList<bool> ();
+		List<bool> R = new List<bool> ();
 
-		while (amount_experiments < batch_count && correct_percent_batch - 0.5f >= 0.1f) {
+		while (amount_experiments < batch_size && correct_percent_batch - 0.5f >= 0.1f) {
 			// Run one iteration
-			for (int i = 0; i < iteration_count; i++) {
+			for (int i = 0; i < step_count; i++) {
+				// Generate experiment values
 				I = Random.Range (hole_min, hole_max);
 				deltaI = k * I;
 				createBlock (deltaI);
-				R.Add(waitForExperiment(I, deltaI));
-//				batch.Add (result);
+				// Do experiment
+				bool result = waitForExperiment(I, deltaI);
+				R.Add (result);
 				log ();
-//				if (batch.Count > batch_count)
-//					batch.RemoveFirst ();
 				amount_experiments++;
 			}
 
-//			correct_percent = calculatePercentage (batch);
+			correct_percent = calculatePercentage (R, step_count);
 			if (correct_percent > 0.6f) {
 				deltaI += stepSize;
 			} else {
 				deltaI -= stepSize;
 			}
+			correct_percent_batch = calculatePercentage (R, batch_size);
 		}
-
 	}
 
 	bool waitForExperiment() {
 		return false;
 	}
 
-//	float calculatePercentage(ArrayList<bool> batch) {
-//		int sum = 0;
-//		foreach (bool b in batch) {
-//			if (b)
-//				sum++;
-//		}
-//		return (float) sum / (float) batch.Count;
-//	}
+	float calculatePercentage(List<bool> list, int last_amount_elements) {
+		int sum = 0;
+		int size = list.Count;
+		int count = 0;
+		int start = Mathf.Max (0, size - last_amount_elements); // -1 ?
+
+		for (int i = start; i < size; i++) {
+			count++;
+			if (list [i])
+				sum++;
+		}
+		return (float) sum / (float) count;
+	}
 
 	void createBlock(float delta) {
 		CreateBlock script = dock.AddComponent<CreateBlock>();
