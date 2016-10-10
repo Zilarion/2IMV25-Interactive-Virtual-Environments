@@ -40,7 +40,6 @@ public class MouseOrbitImproved : MonoBehaviour {
 
 	void LateUpdate () 
 	{
-		Debug.Log ("Camera script runs");
 		if (Input.GetMouseButtonDown(0))
 		{
 			Cursor.lockState = CursorLockMode.Locked;
