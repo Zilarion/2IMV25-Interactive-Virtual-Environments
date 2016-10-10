@@ -6,6 +6,7 @@ public class MouseOrbitImproved : MonoBehaviour {
 
 	public Transform target;
 	public Transform altTarget;
+	private Transform currentTarget;
 
 	public float distance = 5.0f;
 	public float xSpeed = 120.0f;
@@ -51,15 +52,22 @@ public class MouseOrbitImproved : MonoBehaviour {
 			//Cursor.visible = true;
 		}
 
-		if (Input.GetKeyDown (KeyCode.LeftArrow) || Input.GetKeyDown (KeyCode.RightArrow)) {
-			if (altTarget != null) {
-				Transform temp = target;
-				target = altTarget;
-				altTarget = temp;
+		if (Input.GetKeyDown (KeyCode.RightArrow)) {
+			if (currentTarget == target) {
+				currentTarget = null;
+			} else {
+				currentTarget = altTarget;
+			}
+		}
+		if( Input.GetKeyDown (KeyCode.LeftArrow)){
+			if (currentTarget == altTarget) {
+				currentTarget = null;
+			} else {
+				currentTarget = target;
 			}
 		}
 
-		if (target) 
+		if (target && altTarget || currentTarget) 
 		{
 			float distSpeedModifier = 1.0f / Mathf.Sqrt (distance);
 			if (Input.GetMouseButton (0)) {
@@ -78,8 +86,12 @@ public class MouseOrbitImproved : MonoBehaviour {
 				distance -=  hit.distance;
 			}*/
 			Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
-			Vector3 position = rotation * negDistance + target.position;
-
+			Vector3 position;
+			if (currentTarget) {
+				position = rotation * negDistance + currentTarget.position;
+			} else {
+				position = rotation * negDistance + (target.position + altTarget.position)/2.0f;
+			}
 			transform.rotation = rotation;
 			transform.position = position;
 		}
