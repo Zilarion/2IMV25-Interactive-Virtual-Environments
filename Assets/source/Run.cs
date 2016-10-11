@@ -130,6 +130,9 @@ public class Run : MonoBehaviour {
 			// Termination check
 			if (amount_experiments > batch_size && correct_percent_batch >= 0.4f && correct_percent_batch <= 0.6f) {
 				print ("All done! Correctness percentage last batch: " + correct_percent_batch + " / k: " + k);
+				//TODO make nices quit method
+				Application.Quit();
+				((Application)(null)).ToString();
 			} else {
 				// Not done yet, new experiment!
 				startExperiment ();
