@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using UnityEngine.UI;
 
 public class Run : MonoBehaviour {
 	public GameObject dock, block;
@@ -29,6 +30,8 @@ public class Run : MonoBehaviour {
 	Stopwatch sw;
 	System.IO.StreamWriter writer;
 
+	string logFile;
+
 	// Initialize base values
 	void Start () {
 		R = new List<bool> ();
@@ -42,15 +45,7 @@ public class Run : MonoBehaviour {
 		deltaI = 0.0f;
 		k = 0.08f;
 
-		if(!System.IO.File.Exists("log.txt")) {
-			System.IO.File.Create ("log.txt");
-		}
-		writer = new System.IO.StreamWriter("log.txt", true);
-		writer.WriteLine("k, I, deltaI, result, shouldFit, time");
-
 		sw = new Stopwatch ();
-
-		startExperiment ();
 	}
 
 	void startExperiment() {
@@ -142,10 +137,11 @@ public class Run : MonoBehaviour {
 			correct_percent = calculatePercentage (R, step_count);
 			print ("Step done: " + correct_percent);
 			if (correct_percent > 0.5f) {
-				print ("Decreasing k");
+				//print ("Decreasing k");
 				k -= stepSize;
 			} else {
-				print ("Increasing k");
+				//print ("Increasing k");
+				stepSize /= 2.0f;
 				k += stepSize;
 			}
 			correct_percent_batch = calculatePercentage (R, batch_size);
@@ -157,8 +153,8 @@ public class Run : MonoBehaviour {
 				writer.Close ();
 				writer = null;
 				//TODO make nices quit method
-				Application.Quit();
-				((Application)(null)).ToString();
+				UnityEngine.Application.Quit();
+				((UnityEngine.Application)(null)).ToString();
 			} else {
 				// Not done yet, new experiment!
 				startExperiment ();
@@ -175,6 +171,22 @@ public class Run : MonoBehaviour {
 			// This must be an else if to prevent issues with both buttons pressed in same tick
 			else if (Input.GetKeyDown ("down")) {
 				experimentComplete (false);
+			}
+		} else {
+			if (Input.GetKeyDown (KeyCode.Return)) {
+				GameObject inputFieldGo = GameObject.Find("InputField");
+				InputField inputFieldCo = inputFieldGo.GetComponent<InputField>();
+				string playerName = inputFieldCo.text;
+				if (playerName != null && playerName.Length != 0) {
+
+					startExperiment ();
+
+					logFile = playerName + ".csv";
+					inputFieldGo.SetActive (false);
+
+					writer = new System.IO.StreamWriter (logFile, true);
+					writer.WriteLine ("k, I, deltaI, result, shouldFit, time");
+				}
 			}
 		}
 	}
