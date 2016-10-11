@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 public class Run : MonoBehaviour {
 	public GameObject dock, block;
@@ -24,18 +25,30 @@ public class Run : MonoBehaviour {
 	// Data
 	List<bool> R;
 
+	// Logging
+	Stopwatch sw;
+	System.IO.StreamWriter writer;
+
 	// Initialize base values
 	void Start () {
 		R = new List<bool> ();
 		hole_min = 0.1f;
 		hole_max = maxSize (dock);
-		stepSize = 0.05f;
+		stepSize = 0.01f;
 		batch_size = 15;
 		step_count = 5;
 
 		I = 0.0f;
 		deltaI = 0.0f;
-		k = 0.2f;
+		k = 0.08f;
+
+		if(!System.IO.File.Exists("log.txt")) {
+			System.IO.File.Create ("log.txt");
+		}
+		writer = new System.IO.StreamWriter("log.txt", true);
+		writer.WriteLine("k, I, deltaI, result, shouldFit, time");
+
+		sw = new Stopwatch ();
 
 		startExperiment ();
 	}
@@ -56,7 +69,8 @@ public class Run : MonoBehaviour {
 		// Create block with difference delta I
 		float blockSize = oversized ? I + deltaI : I - deltaI;
 		block.transform.localScale = new Vector3(blockSize, block.transform.localScale.y, block.transform.localScale.z);
-		print ("Starting experiment #" + amount_experiments + " values: " + I + " / " + deltaI + " / " + k + " expected: " + correctResult);
+		//print ("Starting experiment #" + amount_experiments + " values: " + I + " / " + deltaI + " / " + k + " expected: " + correctResult);
+		sw.Start();
 	}
 
 	float calculatePercentage(List<bool> list, int last_amount_elements) {
@@ -91,9 +105,6 @@ public class Run : MonoBehaviour {
 		script.z = 0.15f; // Keep static, only vary x
 	}
 
-	void log() {
-	}
-
 	float maxSize(GameObject gobj) {
 		float x = gobj.transform.lossyScale.x;
 		float z = gobj.transform.lossyScale.z;
@@ -101,9 +112,21 @@ public class Run : MonoBehaviour {
 	}
 
 	void experimentComplete(bool choice) {
+		// Measure the time
+		sw.Stop ();
+		double time_ms = sw.ElapsedMilliseconds;
+		sw.Reset();
+
 		// Add result
-		R.Add (correctResult == choice);
-		log ();
+		bool correct = correctResult == choice;
+		R.Add (correct);
+		{
+			if (writer != null) {
+				// Log results:
+				string results = k + "," + I + "," + deltaI + "," + correct + "," + correctResult + "," + time_ms;
+				writer.WriteLine (results);
+			}
+		}
 
 		// Increase counters
 		stepI++;
@@ -129,7 +152,10 @@ public class Run : MonoBehaviour {
 
 			// Termination check
 			if (amount_experiments > batch_size && correct_percent_batch >= 0.4f && correct_percent_batch <= 0.6f) {
-				print ("All done! Correctness percentage last batch: " + correct_percent_batch + " / k: " + k);
+				//print ("All done! Correctness percentage last batch: " + correct_percent_batch + " / k: " + k);
+				writer.Flush ();
+				writer.Close ();
+				writer = null;
 				//TODO make nices quit method
 				Application.Quit();
 				((Application)(null)).ToString();
@@ -146,7 +172,8 @@ public class Run : MonoBehaviour {
 			if (Input.GetKeyDown ("up")) {
 				experimentComplete (true);
 			}
-			if (Input.GetKeyDown ("down")) {
+			// This must be an else if to prevent issues with both buttons pressed in same tick
+			else if (Input.GetKeyDown ("down")) {
 				experimentComplete (false);
 			}
 		}
