@@ -5,7 +5,7 @@ using System.Diagnostics;
 using UnityEngine.UI;
 
 public class Run : MonoBehaviour {
-	public GameObject dock, block;
+	public GameObject dock, block, input;
 
 	// Data variables
 	bool runningExperiment = false;
@@ -172,15 +172,14 @@ public class Run : MonoBehaviour {
 			}
 		} else {
 			if (Input.GetKeyDown (KeyCode.Return)) {
-				GameObject inputFieldGo = GameObject.Find("InputField");
-				InputField inputFieldCo = inputFieldGo.GetComponent<InputField>();
+				InputField inputFieldCo = input.GetComponent<InputField>();
 				string playerName = inputFieldCo.text;
 				if (playerName != null && playerName.Length != 0) {
 
 					startExperiment ();
 
 					logFile = "data/ " + playerName + ".csv";
-					inputFieldGo.SetActive (false);
+					input.SetActive (false);
 
 					writer = new System.IO.StreamWriter (logFile, true);
 					writer.WriteLine ("k, I, deltaI, result, shouldFit, time");
