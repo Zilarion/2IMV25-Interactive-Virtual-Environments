@@ -38,7 +38,7 @@ public class Run : MonoBehaviour {
 		hole_min = 0.1f;
 		hole_max = maxSize (dock);
 		batch_size = 15;
-		step_count = 5;
+		step_count = 9;
 
 		I = 0.0f;
 		deltaI = 0.0f;
@@ -145,7 +145,7 @@ public class Run : MonoBehaviour {
 			correct_percent_batch = calculatePercentage (R, batch_size);
 
 			// Termination check
-			if (amount_experiments > batch_size && correct_percent_batch >= 0.4f && correct_percent_batch <= 0.6f) {
+			if (amount_experiments > batch_size && correct_percent_batch <= 0.55f) {
 				//print ("All done! Correctness percentage last batch: " + correct_percent_batch + " / k: " + k);
 				writer.Flush ();
 				writer.Close ();
@@ -177,6 +177,10 @@ public class Run : MonoBehaviour {
 				if (playerName != null && playerName.Length != 0) {
 
 					startExperiment ();
+
+					if (!System.IO.Directory.Exists ("data/")) {
+						System.IO.Directory.CreateDirectory ("data/");
+					}
 
 					logFile = "data/ " + playerName + ".csv";
 					input.SetActive (false);
