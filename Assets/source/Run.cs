@@ -37,13 +37,13 @@ public class Run : MonoBehaviour {
 		R = new List<bool> ();
 		hole_min = 0.1f;
 		hole_max = maxSize (dock);
-		stepSize = 0.01f;
 		batch_size = 15;
 		step_count = 5;
 
 		I = 0.0f;
 		deltaI = 0.0f;
 		k = 0.08f;
+		stepSize = k;
 
 		sw = new Stopwatch ();
 	}
@@ -136,12 +136,10 @@ public class Run : MonoBehaviour {
 			// Calculate new percentage
 			correct_percent = calculatePercentage (R, step_count);
 			print ("Step done: " + correct_percent);
+			stepSize /= 2.0f;
 			if (correct_percent > 0.5f) {
-				//print ("Decreasing k");
 				k -= stepSize;
 			} else {
-				//print ("Increasing k");
-				stepSize /= 2.0f;
 				k += stepSize;
 			}
 			correct_percent_batch = calculatePercentage (R, batch_size);
@@ -181,7 +179,7 @@ public class Run : MonoBehaviour {
 
 					startExperiment ();
 
-					logFile = playerName + ".csv";
+					logFile = "data/ " + playerName + ".csv";
 					inputFieldGo.SetActive (false);
 
 					writer = new System.IO.StreamWriter (logFile, true);
