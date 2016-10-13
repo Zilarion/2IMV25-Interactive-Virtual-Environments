@@ -37,8 +37,8 @@ public class Run : MonoBehaviour {
 		R = new List<bool> ();
 		hole_min = 0.1f;
 		hole_max = maxSize (dock);
-		batch_size = 15;
 		step_count = 9;
+		batch_size = 3*step_count;
 
 		I = 0.0f;
 		deltaI = 0.0f;
