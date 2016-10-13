@@ -1318,6 +1318,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dock: {fileID: 894349844}
   block: {fileID: 1405874090}
+  input: {fileID: 868592665}
 --- !u!1 &1903197315 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 100000, guid: 42b6afc3447f5c649ab3ac558c2e6520, type: 3}
