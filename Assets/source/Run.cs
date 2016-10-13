@@ -42,7 +42,7 @@ public class Run : MonoBehaviour {
 
 		I = 0.0f;
 		deltaI = 0.0f;
-		k = 0.08f;
+		k = 0.6f;
 		stepSize = k;
 
 		sw = new Stopwatch ();
