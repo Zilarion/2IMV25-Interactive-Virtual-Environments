@@ -22,6 +22,7 @@ for (i in 1:dim(res)[1]) {
 
 # Make list out of the matrix
 res <- as.data.frame(res)
+res <- res[0:8]
 
 # Boxplot of k over time 
 boxplot(x=res, main="JND over time", xlab="Batch number", ylab="k")
@@ -46,5 +47,23 @@ for (i in 1:length(correctness)) {
 }
 correctness_data <- plyr::ldply(correctness_data, rbind)
 correctness_data <- lapply(correctness_data, function(x) x[!is.na(x)])
+correctness_data <- correctness_data[0:8]
 
 boxplot(x=correctness_data, main="Errors over time", xlab="Batch number", ylab="Number correct")
+
+#------------- Density -----------------
+I <- unlist(sapply(ldf, function(x) x["I"][,]))
+hist(I, breaks=25, col="red")
+
+
+deltaI <- unlist(sapply(ldf, function(x) x["deltaI"][,]))
+hist(deltaI, breaks=25, col="red")
+
+
+time <- unlist(sapply(ldf, function(x) x["time"][,]))
+hist(time, breaks=25, col="red")
+
+
+result <- as.numeric(unlist(sapply(ldf, function(x) x["result"][,])))
+hist(result, breaks=2, col="red")
+
